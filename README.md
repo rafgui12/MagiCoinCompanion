@@ -1,2 +1,3 @@
-# MagiCoinCompanion
-Personal App Magi Coin Companion
+# magicoincompanion
+
+A new Flutter project.
