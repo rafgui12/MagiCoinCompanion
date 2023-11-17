@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:magicoincompanion/page/MagiCoin.dart';
+import 'package:magicoincompanion/page/UserMagiCoin.dart';
 
 void main() => runApp(const MyApp());
 
@@ -9,6 +9,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-    home: MagiCoin(),
+    home: UserMagiCoin(),
   );
 }
