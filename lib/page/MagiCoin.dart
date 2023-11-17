@@ -14,7 +14,6 @@ Future<MagiUser> fetchMagiUser(username) async {
     // then parse the JSON.
     return MagiUser.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   } else {
-    print(response);
     // If the server did not return a 200 OK response,
     // then throw an exception.
     throw Exception('Failed to load album');
@@ -27,13 +26,15 @@ class MagiUser {
   final double stakedbalance;
   final String usernameMagi;
   final double priceMax;
+  final List Transactions;
 
   const MagiUser({
     required this.address,
     required this.balance,
     required this.stakedbalance,
     required this.usernameMagi,
-    required this.priceMax
+    required this.priceMax,
+    required this.Transactions
   });
 
   factory MagiUser.fromJson(Map<String, dynamic> json) {
@@ -43,7 +44,7 @@ class MagiUser {
       stakedbalance: json['result']['balance']['staked_balance'] as double,
       usernameMagi: json['result']['balance']['username'] as String,
       priceMax: json['result']['price']['max'] as double,
-
+      Transactions:json['result']['transactions'] as List
     );
   }
 }
@@ -62,7 +63,6 @@ class MagiCoin extends StatelessWidget {
   @override
   
   Widget build (BuildContext context) { 
-    print(futureMagiUser);
     return
     Scaffold(
     backgroundColor: Color(0xFFE0F5FF),
@@ -182,12 +182,12 @@ class MagiCoin extends StatelessWidget {
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               return Text(
-                                  '\$ ' + (snapshot.data!.priceMax).toString(),
+                                  '\$ ' + (snapshot.data!.priceMax).toStringAsFixed(8),
                                   style: TextStyle(
                                     color: Color.fromRGBO(0, 0, 0, 1),
                                     fontFamily: 'Inter',
                                     fontSize: 12,
-                                    fontWeight: FontWeight.bold
+                                    fontWeight: FontWeight.w200
                                   ),
                                 );
                             } else if (snapshot.hasError) {
@@ -197,7 +197,7 @@ class MagiCoin extends StatelessWidget {
                                     color: Color.fromRGBO(0, 0, 0, 1),
                                     fontFamily: 'Inter',
                                     fontSize: 12,
-                                    fontWeight: FontWeight.bold
+                                    fontWeight: FontWeight.w200
                                   ),
                                 );
                             }
@@ -272,7 +272,7 @@ class MagiCoin extends StatelessWidget {
                                     color: Color.fromRGBO(0, 0, 0, 1),
                                     fontFamily: 'Inter',
                                     fontSize: 12,
-                                    fontWeight: FontWeight.bold
+                                    fontWeight: FontWeight.w200
                                   ),
                                 );
                             } else if (snapshot.hasError) {
@@ -282,7 +282,7 @@ class MagiCoin extends StatelessWidget {
                                     color: Color.fromRGBO(0, 0, 0, 1),
                                     fontFamily: 'Inter',
                                     fontSize: 12,
-                                    fontWeight: FontWeight.bold
+                                    fontWeight: FontWeight.w200
                                   ),
                                 );
                             }
@@ -315,7 +315,41 @@ class MagiCoin extends StatelessWidget {
           ),
         ),
 /// Add line break here ///
-
+         Container(
+          padding: const EdgeInsets.all(32),
+          child: Row(
+            children: [
+              FutureBuilder<MagiUser>(
+              future: futureMagiUser,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Container(
+                    height: MediaQuery.of(context).size.height * 0.4, // Adjust the height as needed
+                    width: MediaQuery.of(context).size.width * 0.8, // Adjust the width as needed
+                    child: ListView.builder(
+                      itemCount: snapshot.data!.Transactions.length,
+                      itemBuilder: (context, index) {
+                        final item = snapshot.data!.Transactions[index];
+                        print(item);
+                        return Card(
+                          child: ListTile(
+                            title: Text("${item['amount']} to ${item['recipient']}"),
+                            subtitle: Text("${item['memo']}"),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  print(snapshot.error);
+                }
+                // By default, show a loading spinner.
+                return const CircularProgressIndicator();
+                },
+              ),
+            ],
+          ),
+         ), 
       ] 
     ),
   );
