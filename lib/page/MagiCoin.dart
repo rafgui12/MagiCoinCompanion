@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:async';
-import 'dart:js';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -15,6 +14,7 @@ Future<MagiUser> fetchMagiUser(username) async {
     // then parse the JSON.
     return MagiUser.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   } else {
+    print(response);
     // If the server did not return a 200 OK response,
     // then throw an exception.
     throw Exception('Failed to load album');
@@ -60,138 +60,262 @@ class MagiCoin extends StatelessWidget {
     }) : super(key: key); 
 
   @override
-  Widget titleSection = Container(
-  padding: const EdgeInsets.all(32),
-  child: Row(
-    children: [
-      Expanded(
-        /*1*/
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /*2*/
-            Container(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: const Text(
-                'Oeschinen Lake Campground',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Text(
-              'Kandersteg, Switzerland',
-              style: TextStyle(
-                color: Colors.grey[500],
-              ),
-            ),
-          ],
-        ),
-      ),
-      /*3*/
-      Icon(
-        Icons.star,
-        color: Colors.red[500],
-      ),
-      const Text('41'),
-    ],
-  ),
-);
+  
   Widget build (BuildContext context) { 
     print(futureMagiUser);
     return
     Scaffold(
     backgroundColor: Color(0xFFE0F5FF),
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(173.0), // Set the desired height here
-          child: AppBar(
-            backgroundColor: Color(int.parse('0xFF6AC2EE')),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(20),
+    appBar: PreferredSize(
+      preferredSize: Size.fromHeight(173.0), // Set the desired height here
+      child: AppBar(
+        backgroundColor: Color(int.parse('0xFF6AC2EE')),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
+        ),
+        flexibleSpace: Align(
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Account of ' + username,
+                style: TextStyle(
+                  color: Color.fromRGBO(0, 0, 0, 1),
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w200,
+                ),
               ),
-            ),
-            flexibleSpace: Align(
-              alignment: Alignment.center,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Account of ' + username,
+              SizedBox(height: 20),
+              FutureBuilder<MagiUser>(
+              future: futureMagiUser,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(
+                    'Σ ' + (snapshot.data!.balance).toString(),
                     style: TextStyle(
                       color: Color.fromRGBO(0, 0, 0, 1),
                       fontFamily: 'Inter',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w200,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text(
+                    'Σ ' + '0.0',
+                    style: TextStyle(
+                      color: Color.fromRGBO(0, 0, 0, 1),
+                      fontFamily: 'Inter',
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                }
+                // By default, show a loading spinner.
+                return const CircularProgressIndicator();
+                },
+              ),
+              FutureBuilder<MagiUser>(
+              future: futureMagiUser,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(
+                      '\$ ' + ((snapshot.data!.balance)*(snapshot.data!.priceMax)).toString(),
+                      style: TextStyle(
+                        color: Color.fromRGBO(0, 0, 0, 1),
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold
+                      ),
+                    );
+                } else if (snapshot.hasError) {
+                  return Text(
+                      '\$ ' + '0.0',
+                      style: TextStyle(
+                        color: Color.fromRGBO(0, 0, 0, 1),
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold
+                      ),
+                    );
+                }
+                // By default, show a loading spinner.
+                return const CircularProgressIndicator();
+                },
+              ),
+            ],
+          ),
+        ),
+        centerTitle: true,
+      ),
+    ),
+    body: Column(
+      children:[
+        Container(
+        padding: const EdgeInsets.all(32),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  Container(
+                    width: 100,
+                    height: 80,
+                    child: Card(
+                      color: Color(0xFF6AC2EE),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                              'Magi Price',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          SizedBox(height: 12),
+                          FutureBuilder<MagiUser>(
+                          future: futureMagiUser,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Text(
+                                  '\$ ' + (snapshot.data!.priceMax).toString(),
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                );
+                            } else if (snapshot.hasError) {
+                              return Text(
+                                  '\$ ' + '0.0',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                );
+                            }
+                            // By default, show a loading spinner.
+                            return const CircularProgressIndicator();
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(height: 20),
-                  FutureBuilder<MagiUser>(
-                  future: futureMagiUser,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Text(
-                        'Σ ' + (snapshot.data!.balance).toString(),
-                        style: TextStyle(
-                          color: Color.fromRGBO(0, 0, 0, 1),
-                          fontFamily: 'Inter',
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text(
-                        'Σ ' + '0.0',
-                        style: TextStyle(
-                          color: Color.fromRGBO(0, 0, 0, 1),
-                          fontFamily: 'Inter',
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      );
-                    }
-                    // By default, show a loading spinner.
-                    return const CircularProgressIndicator();
-                    },
-                  ),
-                  FutureBuilder<MagiUser>(
-                  future: futureMagiUser,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Text(
-                          '\$ ' + ((snapshot.data!.balance)*(snapshot.data!.priceMax)).toString(),
-                          style: TextStyle(
-                            color: Color.fromRGBO(0, 0, 0, 1),
-                            fontFamily: 'Inter',
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold
-                          ),
-                        );
-                    } else if (snapshot.hasError) {
-                      return Text(
-                          '\$ ' + '0.0',
-                          style: TextStyle(
-                            color: Color.fromRGBO(0, 0, 0, 1),
-                            fontFamily: 'Inter',
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold
-                          ),
-                        );
-                    }
-                    // By default, show a loading spinner.
-                    return const CircularProgressIndicator();
-                    },
-                  ),// Add line break here
-                  
                 ],
               ),
             ),
-            centerTitle: true,
+            Expanded(
+              child: Column(
+                children: [
+                  Container(
+                    width: 100,
+                    height: 80,
+                    child: Card(
+                      color: Color(0xFF6AC2EE),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '24h Earning',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          Text('\$ '+'0.0', 
+                            style: TextStyle(
+                              fontWeight: FontWeight.w200,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  Container(
+                    width: 100,
+                    height: 80,
+                    child: Card(
+                      color: Color(0xFF6AC2EE),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Staking Balance',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          FutureBuilder<MagiUser>(
+                          future: futureMagiUser,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Text(
+                                  'Σ ' + (snapshot.data!.stakedbalance).toString(),
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                );
+                            } else if (snapshot.hasError) {
+                              return Text(
+                                  'Σ ' + '0.0',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                );
+                            }
+                            // By default, show a loading spinner.
+                            return const CircularProgressIndicator();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        )
+      ),
+/// Add line break here ///
+        Container(
+          alignment: Alignment.centerLeft,
+          margin: EdgeInsets.only(left: 32,top: 16),
+          child: Text(
+            'Last Transactions',
+            style: TextStyle(
+              color: Color.fromRGBO(0, 0, 0, 1),
+              fontFamily: 'Inter',
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-    body: Column(
-      children:[
-        titleSection,
+/// Add line break here ///
+
       ] 
     ),
   );
