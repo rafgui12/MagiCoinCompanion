@@ -462,7 +462,7 @@ class MagiCoin extends StatelessWidget {
                                     children: [
                                       Text.rich(
                                         TextSpan(
-                                          text:"+",
+                                          text:"-",
                                           style: TextStyle(
                                             color: Color(0xFFFF0000),
                                             fontFamily: 'Inter',
@@ -476,7 +476,7 @@ class MagiCoin extends StatelessWidget {
                                                 color: Color.fromRGBO(0, 0, 0, 1),
                                                 fontFamily: 'Inter',
                                                 fontSize: 16,
-                                                fontWeight: FontWeight.w200
+                                                fontWeight: FontWeight.bold
                                               ),
                                             ),
                                           ],
