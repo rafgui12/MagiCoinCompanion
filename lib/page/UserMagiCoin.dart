@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:magicoincompanion/page/MagiCoin.dart';
+import 'dart:async';
 
 class UserMagiCoin extends StatelessWidget {
+  bool showError = true;
+  final String error;
+  UserMagiCoin({
+      Key? key, 
+      this.error = ''
+    }) : super(key: key); 
 
   Widget welcomeSection = Container(
     padding: const EdgeInsets.all(32),
@@ -30,8 +37,7 @@ class UserMagiCoin extends StatelessWidget {
   
   TextEditingController _usernameController = TextEditingController();
   
-  Widget inputUser(BuildContext context) => Container(
-    padding: const EdgeInsets.all(32),
+  Widget inputUser(BuildContext context) => Container(padding: const EdgeInsets.all(32),
     child: Row(
       children: [
         Expanded(
@@ -49,10 +55,9 @@ class UserMagiCoin extends StatelessWidget {
           onPressed: () {
             String username = _usernameController.text; // Retrieve the text from the TextEditingController
             // Do something with the username
-            Navigator.push(
-              context,
+            Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => MagiCoin(
-              username: username,
+                username: username,
               )),
             );
           },
@@ -61,8 +66,10 @@ class UserMagiCoin extends StatelessWidget {
     ),
   );
 
+
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+      return Scaffold(
         backgroundColor: Color(0xFFE0F5FF),
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(173.0), // Set the desired height here
@@ -105,7 +112,24 @@ class UserMagiCoin extends StatelessWidget {
           children: [
             welcomeSection,
             inputUser(context),
-            ],
+            if (error.isNotEmpty) Container(
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.6),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Text(
+                error,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         ),
       );
+    }
 }

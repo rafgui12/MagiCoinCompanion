@@ -4,19 +4,33 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:magicoincompanion/page/UserMagiCoin.dart';
 
-Future<MagiUser> fetchMagiUser(username) async {
+
+Future<MagiUser?> fetchMagiUser(username, BuildContext context) async {
   final response = await http
       .get(Uri.parse('https://magi.duinocoin.com//users/' + username));
-
   if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    return MagiUser.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    if ((json.decode(response.body))['success'] == true){
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return MagiUser.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    }else{
+      Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => UserMagiCoin(
+        error: (json.decode(response.body))['message'] as String,
+      )),
+    );
+    }
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    throw Exception('Failed to load album');
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => UserMagiCoin(
+        error: 'Failed to load',
+      )),
+    );
+    return null;
   }
 }
 
@@ -51,9 +65,6 @@ class MagiUser {
 
 
 class MagiCoin extends StatelessWidget {
-
-  late Future<MagiUser> futureMagiUser = fetchMagiUser(username);
-
   final String username;
   MagiCoin({
       Key? key, 
@@ -63,6 +74,7 @@ class MagiCoin extends StatelessWidget {
   @override
   
   Widget build (BuildContext context) { 
+    late Future<MagiUser?> futureMagiUser = fetchMagiUser(username, context);
     return
     Scaffold(
     backgroundColor: Color(0xFFE0F5FF),
@@ -80,30 +92,66 @@ class MagiCoin extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Account of ' + username,
-                style: TextStyle(
-                  color: Color.fromRGBO(0, 0, 0, 1),
-                  fontFamily: 'Inter',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w200,
+              Text.rich(
+                TextSpan(
+                  text: 'Account of ',
+                  style: TextStyle(
+                    color: Color.fromRGBO(0, 0, 0, 1),
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w200,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: username,
+                      style: TextStyle(
+                        color: Color.fromRGBO(0, 0, 0, 1),
+                        fontFamily: 'Inter',
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+              ),  
               SizedBox(height: 20),
-              FutureBuilder<MagiUser>(
+              FutureBuilder<MagiUser?>(
               future: futureMagiUser,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return Text(
-                    'Σ ' + (snapshot.data!.balance).toString(),
-                    style: TextStyle(
-                      color: Color.fromRGBO(0, 0, 0, 1),
-                      fontFamily: 'Inter',
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
+                  return Text.rich(
+                    TextSpan(
+                      text: 'Σ ',
+                      style: TextStyle(
+                        color: Color.fromRGBO(0, 0, 0, 1),
+                        fontFamily: 'Inter',
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: '${(snapshot.data!.balance).toString().split('.')[0]}.',
+                          style: TextStyle(
+                            color: Color.fromRGBO(0, 0, 0, 1),
+                            fontFamily: 'Inter',
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '${(snapshot.data!.balance).toString().split('.')[1]}',
+                          style: TextStyle(
+                            color: Color.fromRGBO(0, 0, 0, 1),
+                            fontFamily: 'Inter',
+                            fontSize: 32,
+                            fontWeight: FontWeight.w200,
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 } else if (snapshot.hasError) {
+                  print(snapshot);
                   return Text(
                     'Σ ' + '0.0',
                     style: TextStyle(
@@ -118,7 +166,7 @@ class MagiCoin extends StatelessWidget {
                 return const CircularProgressIndicator();
                 },
               ),
-              FutureBuilder<MagiUser>(
+              FutureBuilder<MagiUser?>(
               future: futureMagiUser,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -177,7 +225,7 @@ class MagiCoin extends StatelessWidget {
                               ),
                             ),
                           SizedBox(height: 12),
-                          FutureBuilder<MagiUser>(
+                          FutureBuilder<MagiUser?>(
                           future: futureMagiUser,
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
@@ -262,7 +310,7 @@ class MagiCoin extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 12),
-                          FutureBuilder<MagiUser>(
+                          FutureBuilder<MagiUser?>(
                           future: futureMagiUser,
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
@@ -309,34 +357,170 @@ class MagiCoin extends StatelessWidget {
             style: TextStyle(
               color: Color.fromRGBO(0, 0, 0, 1),
               fontFamily: 'Inter',
-              fontSize: 32,
+              fontSize: 26,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
 /// Add line break here ///
          Container(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.only(top:16),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              FutureBuilder<MagiUser>(
+              FutureBuilder<MagiUser?>(
               future: futureMagiUser,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return Container(
                     height: MediaQuery.of(context).size.height * 0.4, // Adjust the height as needed
-                    width: MediaQuery.of(context).size.width * 0.8, // Adjust the width as needed
+                    width: MediaQuery.of(context).size.width * 0.9, // Adjust the width as needed
                     child: ListView.builder(
                       itemCount: snapshot.data!.Transactions.length,
                       itemBuilder: (context, index) {
-                        final item = snapshot.data!.Transactions[index];
-                        print(item);
-                        return Card(
-                          child: ListTile(
-                            title: Text("${item['amount']} to ${item['recipient']}"),
-                            subtitle: Text("${item['memo']}"),
-                          ),
-                        );
+                        final reversedIndex = snapshot.data!.Transactions.length - 1 - index;
+                        final item = snapshot.data!.Transactions[reversedIndex];
+                        if (item['recipient'] == username) {
+                          return Card(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Alinea las columnas a los extremos
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(10),
+                                    child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text.rich(
+                                        TextSpan(
+                                          text:"+",
+                                          style: TextStyle(
+                                            color: Color(0xFF06A10C),
+                                            fontFamily: 'Inter',
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold
+                                          ),
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                              text: " ${item['amount']} to ${item['recipient']}",
+                                              style: TextStyle(
+                                                color: Color.fromRGBO(0, 0, 0, 1),
+                                                fontFamily: 'Inter',
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Text(
+                                        "${item['memo']}", 
+                                        style: TextStyle(
+                                          fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w200
+                                        )
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                     Text(
+                                        "${(item['datetime']).toString().split(' ')[0]}",
+                                        style: TextStyle(
+                                          fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w200
+                                        )
+                                      ),
+                                      Text(
+                                        "${(item['datetime']).toString().split(' ')[1]}",
+                                        style: TextStyle(
+                                          fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w200
+                                        )
+                                      ),   
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }else{
+                          return Card(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Alinea las columnas a los extremos
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(10),
+                                    child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text.rich(
+                                        TextSpan(
+                                          text:"+",
+                                          style: TextStyle(
+                                            color: Color(0xFFFF0000),
+                                            fontFamily: 'Inter',
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold
+                                          ),
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                              text: " ${item['amount']} to ${item['recipient']}",
+                                              style: TextStyle(
+                                                color: Color.fromRGBO(0, 0, 0, 1),
+                                                fontFamily: 'Inter',
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w200
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Text(
+                                        "${item['memo']}", 
+                                        style: TextStyle(
+                                          fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w200
+                                        )
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                     Text(
+                                        "${(item['datetime']).toString().split(' ')[0]}",
+                                        style: TextStyle(
+                                          fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w200
+                                        )
+                                      ),
+                                      Text(
+                                        "${(item['datetime']).toString().split(' ')[1]}",
+                                        style: TextStyle(
+                                          fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w200
+                                        )
+                                      ),   
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
                       },
                     ),
                   );
@@ -354,6 +538,5 @@ class MagiCoin extends StatelessWidget {
     ),
   );
   }
-  
 }
 
