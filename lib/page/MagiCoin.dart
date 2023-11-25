@@ -1,84 +1,73 @@
-import 'dart:convert';
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:magicoincompanion/page/UserMagiCoin.dart';
 
-
-Future<MagiUser?> fetchMagiUser(username, BuildContext context) async {
-  final response = await http.get(Uri.parse('https://magi.duinocoin.com//users/' + username));
-  if (response.statusCode == 200) {
-    if ((json.decode(response.body))['success'] == true){
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      return MagiUser.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
-    }else{
-      Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => UserMagiCoin(
-        error: (json.decode(response.body))['message'] as String,
-      )),
-    );
-    }
-  } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => UserMagiCoin(
-        error: 'Failed to load',
-      )),
-    );
-    return null;
-  }
-}
-
-class MagiUser {
-  final String address;
+class MagiCoin extends StatelessWidget {
+  final String username;
   final double balance;
   final double stakedbalance;
   final String usernameMagi;
   final double priceMax;
+  final double paid24h;
+  final double nextpay;
   final List Transactions;
-
-  const MagiUser({
-    required this.address,
-    required this.balance,
-    required this.stakedbalance,
-    required this.usernameMagi,
-    required this.priceMax,
-    required this.Transactions
-  });
-
-  factory MagiUser.fromJson(Map<String, dynamic> json) {
-    return MagiUser(
-      address: json['result']['balance']['address'] as String,
-      balance: json['result']['balance']['balance'] as double,
-      stakedbalance: json['result']['balance']['staked_balance'] as double,
-      usernameMagi: json['result']['balance']['username'] as String,
-      priceMax: json['result']['price']['max'] as double,
-      Transactions:json['result']['transactions'] as List
-    );
-  }
-}
-
-class MagiCoin extends StatelessWidget {
-  final String username;
+  final List Miners;
+  
   MagiCoin({
       Key? key, 
-      String? username
-    }) : username = username ?? '', super(key: key); 
+      String? username, 
+      double? balance, 
+      double? stakedbalance, 
+      String? usernameMagi, 
+      double? priceMax, 
+      double? paid24h,
+      double? nextpay,
+      List? Transactions,
+      List? Miners
+    }) : username = username ?? '', balance = balance ?? 0, stakedbalance = stakedbalance ?? 0, usernameMagi = usernameMagi ?? '', priceMax = priceMax ?? 0, paid24h = paid24h ?? 0, nextpay = nextpay ?? 0,Transactions = Transactions ?? [], Miners = Miners ?? [],super(key: key); 
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: NavigationMagiCoin(username: username),
+      home: NavigationMagiCoin(
+        username: username,
+        balance: balance,
+        stakedbalance: stakedbalance,
+        usernameMagi: usernameMagi,
+        priceMax: priceMax,
+        paid24h: paid24h,
+        nextpay: nextpay,
+        Transactions: Transactions,
+        Miners: Miners
+      ),
     );
   }
 }
 
 class NavigationMagiCoin extends StatefulWidget {
   final String username;
-  const NavigationMagiCoin({Key? key, required this.username}) : super(key: key);
+  final double balance;
+  final double stakedbalance;
+  final String usernameMagi;
+  final double priceMax;
+  final double paid24h;
+  final double nextpay;
+  final List Transactions;
+  final List Miners;
+  
+  const NavigationMagiCoin(
+      {
+        Key? key, 
+        required this.username,
+        required this.balance,
+        required this.stakedbalance,
+        required this.usernameMagi,
+        required this.priceMax,
+        required this.paid24h,
+        required this.nextpay,
+        required this.Transactions,
+        required this.Miners
+      }
+    ) : super(key: key);
   @override
   State<NavigationMagiCoin> createState() => _NavigationMagiCoinState();
 }
@@ -86,17 +75,31 @@ class NavigationMagiCoin extends StatefulWidget {
 class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
   int currentPageIndex = 0;
   late String username;
-
+  late double balance;
+  late double stakedbalance;
+  late String usernameMagi;
+  late double priceMax;
+  late double paid24h;
+  late double nextpay;
+  late List Transactions;
+  late List Miners;
   @override
   void initState() {
     super.initState();
     username = widget.username;
+    balance = widget.balance;
+    stakedbalance = widget.stakedbalance;
+    usernameMagi = widget.usernameMagi;
+    priceMax = widget.priceMax;
+    paid24h = widget.paid24h;
+    nextpay = widget.nextpay;
+    Transactions = widget.Transactions;
+    Miners = widget.Miners;
     // You can perform any other necessary operations here
   }
 
   @override
   Widget build(BuildContext context) {
-    late Future<MagiUser?> futureMagiUser = fetchMagiUser(username, context);
     return Scaffold(
       backgroundColor: Color(0xFFE0F5FF),
       appBar: PreferredSize(
@@ -136,85 +139,68 @@ class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
                   ),
                 ),  
                 SizedBox(height: 20),
-                FutureBuilder<MagiUser?>(
-                future: futureMagiUser,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Text.rich(
+                if (balance != 0)
+                Text.rich(
+                  TextSpan(
+                    text: 'Σ ',
+                    style: TextStyle(
+                      color: Color.fromRGBO(0, 0, 0, 1),
+                      fontFamily: 'Inter',
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    children: <TextSpan>[
                       TextSpan(
-                        text: 'Σ ',
+                        text: '${balance.toString().split('.')[0]}.',
                         style: TextStyle(
                           color: Color.fromRGBO(0, 0, 0, 1),
                           fontFamily: 'Inter',
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
                         ),
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: '${(snapshot.data!.balance).toString().split('.')[0]}.',
-                            style: TextStyle(
-                              color: Color.fromRGBO(0, 0, 0, 1),
-                              fontFamily: 'Inter',
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text: '${(snapshot.data!.balance).toString().split('.')[1]}',
-                            style: TextStyle(
-                              color: Color.fromRGBO(0, 0, 0, 1),
-                              fontFamily: 'Inter',
-                              fontSize: 32,
-                              fontWeight: FontWeight.w200,
-                            ),
-                          ),
-                        ],
                       ),
-                    );
-                  } else if (snapshot.hasError) {
-                    print(snapshot);
-                    return Text(
-                      'Σ ' + '0.0',
-                      style: TextStyle(
-                        color: Color.fromRGBO(0, 0, 0, 1),
-                        fontFamily: 'Inter',
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    );
-                  }
-                  // By default, show a loading spinner.
-                  return const CircularProgressIndicator();
-                  },
-                ),
-                FutureBuilder<MagiUser?>(
-                future: futureMagiUser,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Text(
-                        '\$ ' + ((snapshot.data!.balance)*(snapshot.data!.priceMax)).toString(),
+                      TextSpan(
+                        text: '${balance.toString().split('.')[1]}',
                         style: TextStyle(
                           color: Color.fromRGBO(0, 0, 0, 1),
                           fontFamily: 'Inter',
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold
+                          fontSize: 32,
+                          fontWeight: FontWeight.w200,
                         ),
-                      );
-                  } else if (snapshot.hasError) {
-                    return Text(
-                        '\$ ' + '0.0',
-                        style: TextStyle(
-                          color: Color.fromRGBO(0, 0, 0, 1),
-                          fontFamily: 'Inter',
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold
-                        ),
-                      );
-                  }
-                  // By default, show a loading spinner.
-                  return const CircularProgressIndicator();
-                  },
+                      ),
+                    ],
+                  ),
+                )
+                else
+                Text(
+                  '\$ ' + '0.0',
+                  style: TextStyle(
+                    color: Color.fromRGBO(0, 0, 0, 1),
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
+                if (priceMax != 0 && balance != 0)
+                Text(
+                  '\$ ' + ((balance)*(priceMax)).toString(),
+                  style: TextStyle(
+                    color: Color.fromRGBO(0, 0, 0, 1),
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold
+                  ),
+                )
+                else
+                Text(
+                  '\$ ' + '0.0',
+                  style: TextStyle(
+                    color: Color.fromRGBO(0, 0, 0, 1),
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold
+                  ),
+                )
               ],
             ),
           ),
@@ -287,34 +273,26 @@ class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
                                   ),
                                 ),
                               SizedBox(height: 12),
-                              FutureBuilder<MagiUser?>(
-                              future: futureMagiUser,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Text(
-                                      '\$ ' + (snapshot.data!.priceMax).toStringAsFixed(8),
-                                      style: TextStyle(
-                                        color: Color.fromRGBO(0, 0, 0, 1),
-                                        fontFamily: 'Inter',
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w200
-                                      ),
-                                    );
-                                } else if (snapshot.hasError) {
-                                  return Text(
-                                      '\$ ' + '0.0',
-                                      style: TextStyle(
-                                        color: Color.fromRGBO(0, 0, 0, 1),
-                                        fontFamily: 'Inter',
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w200
-                                      ),
-                                    );
-                                }
-                                // By default, show a loading spinner.
-                                return const CircularProgressIndicator();
-                                },
-                              ),
+                              if (priceMax != 0)
+                                Text(
+                                  '\$ ' + (priceMax).toStringAsFixed(8),
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w200
+                                  ),
+                                )
+                              else
+                                Text(
+                                  '\$ ' + '0.0',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w200
+                                  ),
+                                ),
                             ],
                           ),
                         ),
@@ -341,11 +319,26 @@ class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
                                 ),
                               ),
                               SizedBox(height: 12),
-                              Text('\$ '+'0.0', 
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w200,
+                              if (paid24h != 0)
+                                Text(
+                                  '\$ ' + (paid24h).toStringAsFixed(8),
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w200
+                                  ),
+                                )
+                              else
+                                Text(
+                                  '\$ ' + '0.0',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w200
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ),
@@ -372,34 +365,26 @@ class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
                                 ),
                               ),
                               SizedBox(height: 12),
-                              FutureBuilder<MagiUser?>(
-                              future: futureMagiUser,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Text(
-                                      'Σ ' + (snapshot.data!.stakedbalance).toString(),
-                                      style: TextStyle(
-                                        color: Color.fromRGBO(0, 0, 0, 1),
-                                        fontFamily: 'Inter',
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w200
-                                      ),
-                                    );
-                                } else if (snapshot.hasError) {
-                                  return Text(
-                                      'Σ ' + '0.0',
-                                      style: TextStyle(
-                                        color: Color.fromRGBO(0, 0, 0, 1),
-                                        fontFamily: 'Inter',
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w200
-                                      ),
-                                    );
-                                }
-                                // By default, show a loading spinner.
-                                return const CircularProgressIndicator();
-                                },
-                              ),
+                              if (stakedbalance != 0)
+                                Text(
+                                  '\$ ' + (stakedbalance).toString(),
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w200
+                                  ),
+                                )
+                              else
+                                Text(
+                                  '\$ ' + '0.0',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w200
+                                  ),
+                                ),
                             ],
                           ),
                         ),
@@ -430,18 +415,15 @@ class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FutureBuilder<MagiUser?>(
-                  future: futureMagiUser,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Container(
+                  if (Transactions.length != 0)
+                    Container(
                         height: MediaQuery.of(context).size.height * 0.4, // Adjust the height as needed
                         width: MediaQuery.of(context).size.width * 0.9, // Adjust the width as needed
                         child: ListView.builder(
-                          itemCount: snapshot.data!.Transactions.length,
+                          itemCount: Transactions.length,
                           itemBuilder: (context, index) {
-                            final reversedIndex = snapshot.data!.Transactions.length - 1 - index;
-                            final item = snapshot.data!.Transactions[reversedIndex];
+                            final reversedIndex = Transactions.length - 1 - index;
+                            final item = Transactions[reversedIndex];
                             if (item['recipient'] == username) {
                               return Card(
                                 child: Row(
@@ -585,14 +567,18 @@ class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
                             }
                           },
                         ),
-                      );
-                    } else if (snapshot.hasError) {
-                      print(snapshot.error);
-                    }
-                    // By default, show a loading spinner.
-                    return const CircularProgressIndicator();
-                    },
-                  ),
+                      )
+                    else
+                      Container(
+                        child: Text(
+                          "No data",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w200
+                          )
+                        ),
+                      ), 
                 ],
               ),
             ), 
@@ -625,15 +611,26 @@ class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
                                   ),
                                 ),
                               SizedBox(height: 12),
-                              Text(
-                                '0',
-                                style: TextStyle(
-                                  color: Color.fromRGBO(0, 0, 0, 1),
-                                  fontFamily: 'Inter',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w200
+                              if(Miners.length != 0)
+                                Text(
+                                  '${Miners.length}',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w200
+                                  ),
+                                )
+                              else
+                                Text(
+                                  '0',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w200
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ),
@@ -660,11 +657,22 @@ class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
                                 ),
                               ),
                               SizedBox(height: 12),
-                              Text('\$ '+'0.0', 
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w200,
+                              if(paid24h != 0)
+                                Text(
+                                  '\$ '+'${paid24h.toStringAsFixed(8)}',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w200
+                                  ),
+                                )
+                              else
+                                Text('\$ '+'0.0', 
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w200,
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ),
@@ -691,6 +699,17 @@ class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
                                 ),
                               ),
                               SizedBox(height: 12),
+                              if (nextpay != 0)
+                                Text(
+                                  'Σ ${nextpay}',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w200
+                                  ),
+                                )
+                              else
                               Text(
                                 'Σ ' + '0.0',
                                 style: TextStyle(
@@ -726,16 +745,93 @@ class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
             ),
     /// Add line break here ///
             Container(
-              child: Text (
-                'No data',
-                style: TextStyle(
-                  color: Color.fromRGBO(0, 0, 0, 1),
-                  fontFamily: 'Inter',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w200,
-                ),
+              padding: const EdgeInsets.only(top:16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (Miners.length != 0)
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.4, // Adjust the height as needed
+                      width: MediaQuery.of(context).size.width * 0.9, // Adjust the width as needed
+                      child: ListView.builder(
+                        itemCount: Miners.length,
+                        itemBuilder: (context, index) {
+                          final reversedIndex = Miners.length - 1 - index;
+                          final item = Miners[reversedIndex];
+                          return Card(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Alinea las columnas a los extremos
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 10, left: 16, bottom: 10, right: 16),
+                                      child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "${item['ID']}", 
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold
+                                          )
+                                        ),
+                                        Text(
+                                          "${item['version']}", 
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w200
+                                          )
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 10, right: 16, bottom: 10, left: 16),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                      Text(
+                                          "${(item['accepted'])}",
+                                          style: TextStyle(
+                                            color: Color(0xFF06A10C),
+                                            fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w200
+                                          )
+                                        ),
+                                        Text(
+                                          "${(item['rejected'])}",
+                                          style: TextStyle(
+                                            color: Color(0xFFFF0000),
+                                            fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w200
+                                          )
+                                        ),   
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                      ),
+                    )
+                  else
+                    Container(
+                      child: Text(
+                        "No data",
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w200
+                        )
+                      ),
+                    ), 
+                ],
               ),
-            ), 
+            ),
           ] 
         ),
 
