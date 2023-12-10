@@ -672,7 +672,7 @@ class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
                                 const SizedBox(height: 12),
                                 if (paid24h != 0)
                                   Text(
-                                    'Σ ' + paid24h.toStringAsFixed(6),
+                                    'Σ ${paid24h.toStringAsFixed(6)}',
                                     style: const TextStyle(
                                         color: Color.fromRGBO(0, 0, 0, 1),
                                         fontFamily: 'Inter',
