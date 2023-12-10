@@ -1,8 +1,8 @@
-# Privacy Policy for DuinoCoin Companion
+# Privacy Policy for MagiCoin Companion
 
 Last Updated: Dec/10/2023
 
-Rafgui012 ("we," "us," or "our") operates the DuinoCoin Companion mobile application (the "App"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our App and the choices you have associated with that data.
+Rafgui012 ("we," "us," or "our") operates the MAgiCoin Companion mobile application (the "App"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our App and the choices you have associated with that data.
 
 ## Information Collection and Use
 
