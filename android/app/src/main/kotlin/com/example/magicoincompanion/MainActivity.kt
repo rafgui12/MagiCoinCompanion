@@ -1,4 +1,4 @@
-package com.example.magicoincompanion
+package com.rafgui.magicoincompanion
 
 import io.flutter.embedding.android.FlutterActivity
 
