@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:magicoincompanion/page/UserMagiCoin.dart';
 
@@ -472,146 +473,421 @@ class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
                   children: [
                     if (Transactions.isNotEmpty)
                       SizedBox(
-                        height: MediaQuery.of(context).size.height *
-                            0.4, // Adjust the height as needed
-                        width: MediaQuery.of(context).size.width *
-                            0.9, // Adjust the width as needed
+                        height: MediaQuery.of(context).size.height * 0.4, // Adjust the height as needed
+                        width: MediaQuery.of(context).size.width * 0.9, // Adjust the width as needed
                         child: ListView.builder(
                           itemCount: Transactions.length,
                           itemBuilder: (context, index) {
                             final reversedIndex = Transactions.length - 1 - index;
                             final item = Transactions[reversedIndex];
+                            DateTime utcDateTime = DateTime.parse(item['datetime']);
+                            Duration timeZoneOffset = DateTime.now().timeZoneOffset;
+                            DateTime localDateTime = utcDateTime.add(timeZoneOffset);
+                            String formattedDateTime = DateFormat('MM-dd-yyyy HH:mm:ss').format(localDateTime);
                             if (item['recipient'] == username) {
-                              return Card(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment
-                                      .spaceBetween, // Alinea las columnas a los extremos
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text.rich(
-                                            TextSpan(
-                                              text: "+",
-                                              style: const TextStyle(
-                                                  color: Color(0xFF06A10C),
-                                                  fontFamily: 'Inter',
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text:
-                                                      " ${item['amount']} to ${item['recipient']}",
-                                                  style: const TextStyle(
-                                                      color: Color.fromRGBO(
-                                                          0, 0, 0, 1),
-                                                      fontFamily: 'Inter',
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.bold),
-                                                ),
-                                              ],
-                                            ),
+                              return 
+                               GestureDetector(
+                                onTap: () {
+                                  // Handle item press here
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Center(child: Text(
+                                          'Transaction to ${item['recipient']}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromRGBO(0, 0, 0, 1),
                                           ),
-                                          Text("${item['memo']}",
-                                              style: const TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w200)),
+                                        )),
+                                        content:  SizedBox(
+                                          height: MediaQuery.of(context).size.height * 0.2, // Adjust the height as needed
+                                          width: MediaQuery.of(context).size.width * 0.5, // Adjust the width as needed
+                                          child: ListView(
+                                            children: [
+                                              SizedBox(height: 16),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'Amount: ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['amount']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'Sender:  ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['sender']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'Recipient: ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['recipient']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'Memo:  ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['memo']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                              SizedBox(height: 20),
+                                              Center(child: Text(
+                                                formattedDateTime,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w200,
+                                                ),
+                                              )),
+                                              Center(child: Text(
+                                                '${item['hash']}',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                ),
+                                                )),
+                                            ],
+                                          ),
+                                        ),
+                                        actions: [
+                                          ElevatedButton(
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<Color>(const Color(0xFF4285F4)),
+                                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                            ),
+                                            onPressed: () {
+                                              // Acción al presionar el botón
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('Close'),
+                                          ),
                                         ],
+                                      );
+                                    },
+                                  );
+                                },
+                                child: 
+                                  Card(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment
+                                        .spaceBetween, // Alinea las columnas a los extremos
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text.rich(
+                                              TextSpan(
+                                                text: "+",
+                                                style: const TextStyle(
+                                                    color: Color(0xFF06A10C),
+                                                    fontFamily: 'Inter',
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold),
+                                                children: <TextSpan>[
+                                                  TextSpan(
+                                                    text:
+                                                        " ${item['amount']} to ${item['recipient']}",
+                                                    style: const TextStyle(
+                                                        color: Color.fromRGBO(
+                                                            0, 0, 0, 1),
+                                                        fontFamily: 'Inter',
+                                                        fontSize: 16,
+                                                        fontWeight: FontWeight.bold),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Text("${item['memo']}",
+                                                style: const TextStyle(
+                                                    fontFamily: 'Inter',
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w200)),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                              (item['datetime']).toString().split(' ')[0],
-                                              style: const TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w200)),
-                                          Text(
-                                              (item['datetime']).toString().split(' ')[1],
-                                              style: const TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w200)),
-                                        ],
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                                (formattedDateTime).toString().split(' ')[0],
+                                                style: const TextStyle(
+                                                    fontFamily: 'Inter',
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w200)),
+                                            Text(
+                                                (formattedDateTime).toString().split(' ')[1],
+                                                style: const TextStyle(
+                                                    fontFamily: 'Inter',
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w200)),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              );
+                               );
                             } else {
-                              return Card(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment
-                                      .spaceBetween, // Alinea las columnas a los extremos
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text.rich(
-                                            TextSpan(
-                                              text: "-",
-                                              style: const TextStyle(
-                                                  color: Color(0xFFFF0000),
-                                                  fontFamily: 'Inter',
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text:
-                                                      " ${item['amount']} to ${item['recipient']}",
-                                                  style: const TextStyle(
-                                                      color: Color.fromRGBO(
-                                                          0, 0, 0, 1),
-                                                      fontFamily: 'Inter',
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.bold),
-                                                ),
-                                              ],
-                                            ),
+                              return 
+                              GestureDetector(
+                                onTap: () {
+                                  // Handle item press here
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      // UTC-0 to Local
+                                      DateTime utcDateTime = DateTime.parse(item['datetime']);
+                                      Duration timeZoneOffset = DateTime.now().timeZoneOffset;
+                                      DateTime localDateTime = utcDateTime.add(timeZoneOffset);
+                                      String formattedDateTime = DateFormat('MM-dd-yyyy HH:mm:ss').format(localDateTime);
+                                      return AlertDialog(
+                                        title: Center(child: Text(
+                                          'Transaction to ${item['recipient']}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromRGBO(0, 0, 0, 1),
                                           ),
-                                          Text("${item['memo']}",
-                                              style: const TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w200)),
+                                        )),
+                                        content:  SizedBox(
+                                          height: MediaQuery.of(context).size.height * 0.2, // Adjust the height as needed
+                                          width: MediaQuery.of(context).size.width * 0.5, // Adjust the width as needed
+                                          child: ListView(
+                                            children: [
+                                              SizedBox(height: 16),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'Amount: ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['amount']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'Sender:  ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['sender']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'Recipient: ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['recipient']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'Memo:  ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['memo']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                              SizedBox(height: 20),
+                                              Center(child: Text(
+                                                '$formattedDateTime',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w200,
+                                                ),
+                                              )),
+                                              Center(child: Text(
+                                                '${item['hash']}',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                ),
+                                                )),
+                                            ],
+                                          ),
+                                        ),
+                                        actions: [
+                                          ElevatedButton(
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<Color>(const Color(0xFF4285F4)),
+                                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                            ),
+                                            onPressed: () {
+                                              // Acción al presionar el botón
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('Close'),
+                                          ),
                                         ],
-                                      ),
+                                      );
+                                    },
+                                  );
+                                },
+                                child:
+                                  Card(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .spaceBetween, // Alinea las columnas a los extremos
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(10),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text.rich(
+                                                TextSpan(
+                                                  text: "-",
+                                                  style: const TextStyle(
+                                                      color: Color(0xFFFF0000),
+                                                      fontFamily: 'Inter',
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.bold),
+                                                  children: <TextSpan>[
+                                                    TextSpan(
+                                                      text:
+                                                          " ${item['amount']} to ${item['recipient']}",
+                                                      style: const TextStyle(
+                                                          color: Color.fromRGBO(
+                                                              0, 0, 0, 1),
+                                                          fontFamily: 'Inter',
+                                                          fontSize: 16,
+                                                          fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Text("${item['memo']}",
+                                                  style: const TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.w200)),
+                                            ],
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(10),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                  (formattedDateTime).toString().split(' ')[0],
+                                                  style: const TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.w200)),
+                                              Text(
+                                                  (formattedDateTime).toString().split(' ')[1],
+                                                  style: const TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.w200)),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                              (item['datetime']).toString().split(' ')[0],
-                                              style: const TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w200)),
-                                          Text(
-                                              (item['datetime']).toString().split(' ')[1],
-                                              style: const TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w200)),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
                               );
                             }
                           },
@@ -805,53 +1081,215 @@ class _NavigationMagiCoinState extends State<NavigationMagiCoin> {
                           itemBuilder: (context, index) {
                             final reversedIndex = Miners.length - 1 - index;
                             final item = Miners[reversedIndex];
-                            return Card(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment
-                                    .spaceBetween, // Alinea las columnas a los extremos
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 10, left: 16, bottom: 10, right: 16),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text("${item['ID']}",
-                                            style: const TextStyle(
-                                                fontFamily: 'Inter',
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold)),
-                                        Text("${item['version']}",
-                                            style: const TextStyle(
-                                                fontFamily: 'Inter',
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w200)),
-                                      ],
-                                    ),
+                            return 
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Center(child: Text(
+                                          'Miner ${item['ID']}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromRGBO(0, 0, 0, 1),
+                                          ),
+                                        )),
+                                        content:  SizedBox(
+                                          height: MediaQuery.of(context).size.height * 0.2, // Adjust the height as needed
+                                          width: MediaQuery.of(context).size.width * 0.5, // Adjust the width as needed
+                                          child: ListView(
+                                            children: [
+                                              SizedBox(height: 16),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'Version: ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['version']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                              SizedBox(height: 8),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'Algo:  ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['algo']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                              SizedBox(height: 8),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'Difficulty: ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['difficulty']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                              SizedBox(height: 8),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'password:  ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['password']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                              SizedBox(height: 8),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'Accepted:  ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['accepted']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                              SizedBox(height: 8),
+                                              Center(child: RichText(
+                                                textAlign: TextAlign.left,
+                                                text: TextSpan(
+                                                  text: 'Rejected:  ', 
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '${item['rejected']}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Color.fromRGBO(0, 0, 0, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),                                              
+                                            ],
+                                          ),
+                                        ),
+                                        actions: [
+                                          ElevatedButton(
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<Color>(const Color(0xFF4285F4)),
+                                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                            ),
+                                            onPressed: () {
+                                              // Acción al presionar el botón
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('Close'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                              },
+                              child: 
+                                Card(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment
+                                        .spaceBetween, // Alinea las columnas a los extremos
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 10, left: 16, bottom: 10, right: 16),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text("${item['ID']}",
+                                                style: const TextStyle(
+                                                    fontFamily: 'Inter',
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold)),
+                                            Text("${item['version']}",
+                                                style: const TextStyle(
+                                                    fontFamily: 'Inter',
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w200)),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 10, right: 16, bottom: 10, left: 16),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Text("${(item['accepted'])}",
+                                                style: const TextStyle(
+                                                    color: Color(0xFF06A10C),
+                                                    fontFamily: 'Inter',
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w200)),
+                                            Text("${(item['rejected'])}",
+                                                style: const TextStyle(
+                                                    color: Color(0xFFFF0000),
+                                                    fontFamily: 'Inter',
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w200)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 10, right: 16, bottom: 10, left: 16),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Text("${(item['accepted'])}",
-                                            style: const TextStyle(
-                                                color: Color(0xFF06A10C),
-                                                fontFamily: 'Inter',
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w200)),
-                                        Text("${(item['rejected'])}",
-                                            style: const TextStyle(
-                                                color: Color(0xFFFF0000),
-                                                fontFamily: 'Inter',
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w200)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
                             );
                           },
                         ),

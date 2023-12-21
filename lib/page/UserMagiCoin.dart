@@ -248,6 +248,15 @@ class UserMagiCoin extends StatelessWidget {
                 print("Fail to load");
                 // Delay for 1 minute (60 seconds)
                 await Future.delayed(const Duration(minutes: 1));
+                // Navigate to the desired screen
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserMagiCoin(
+                      error: 'Fail to load',
+                    ),
+                  ),
+                );
               } else {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
