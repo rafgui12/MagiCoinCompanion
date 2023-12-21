@@ -137,7 +137,7 @@ class UserMagiCoin extends StatelessWidget {
                 String username = _usernameController
                     .text; // Retrieve the text from the TextEditingController
                 // Do something with the username
-                fetchMagiUser(username, context).then((magiUser) async {
+                fetchMagiUser(username).then((magiUser) async {
                   if (magiUser == null) {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
@@ -243,22 +243,11 @@ class UserMagiCoin extends StatelessWidget {
             );
           } else {
             String username = snapshot.data!;
-            fetchMagiUser(username, context).then((magiUser) async {
+            fetchMagiUser(username).then((magiUser) async {
               if (magiUser == null) {
                 print("Fail to load");
-                
                 // Delay for 1 minute (60 seconds)
                 await Future.delayed(const Duration(minutes: 1));
-
-                // Navigate to the desired screen
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UserMagiCoin(
-                      error: 'Fail to load',
-                    ),
-                  ),
-                );
               } else {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(

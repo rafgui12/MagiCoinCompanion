@@ -1,10 +1,9 @@
 // util/magi_api.dart
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-Future<MagiUser?> fetchMagiUser(username, BuildContext context) async {
+Future<MagiUser?> fetchMagiUser(username) async {
   final response = await http.get(Uri.parse('https://magi.duinocoin.com//users/' + username));
   if (response.statusCode == 200) {
     if ((json.decode(response.body))['success'] == true) {
