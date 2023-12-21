@@ -1,4 +1,4 @@
-# MaagiCoin Companion
+# MagiCoin Companion
 
 Magi Coin Compain is an application developed for the integration between your MagiCoin Web Wallet and the  authorized Pool by the official website [MagiCoin](https://magi.duinocoin.com)
 
