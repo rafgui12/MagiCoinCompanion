@@ -2,11 +2,11 @@
 
 Magi Coin Compain is an application developed for the integration between your MagiCoin Web Wallet and the  authorized Pool by the official website [MagiCoin](https://magi.duinocoin.com)
 
-## Features
+### Features
 
 The application integrates the [MagiCoin](https://magi.duinocoin.com) APIs with the [Bowserlab-Pool](https://bowserlab.ddns.net:8080/), [Lidonia](https://lidonia.com/), and [Zpool](https://zpool.ca/algo/m7m) through HTTPS requests. The objective of this project is personal and aims to monitor the MagiCoin Web Wallet and the running miners from the aforementioned pools. It also allows tracking of balance and recent transactions.
 
-## Prerequisites
+### Prerequisites
 This project is developed entirely in Flutter, which provides the versatility for multi-platform development. To work on this project, it is recommended to have the following resources installed:
 
 - [Android Studio](https://developer.android.com/)
@@ -15,7 +15,7 @@ This project is developed entirely in Flutter, which provides the versatility fo
 
 You can use your preferred IDE such as [VSCode](https://code.visualstudio.com/), [Android Studio](https://developer.android.com/), [JetBrain](https://www.jetbrains.com/), or others.
 
-## Installation
+### Installation
 
 Follow the steps below to install and set up the Flutter project locally:
 
@@ -44,7 +44,7 @@ Follow the steps below to install and set up the Flutter project locally:
 > $ flutter run
 
 
-## Usage
+### Usage
 
 This code is free to use and open to contributions and bug notifications. The goal is to achieve unified integration between the pools and the Web Wallet, and it is not developed for profit.
 
@@ -58,7 +58,7 @@ This code is for personal use only, and the following is allowed:
 
 Using this code responsibly helps us have a developing tool that supports and benefits many people. Please be responsible with the code.
 
-## Contributing
+### Contributing
 
 We welcome contributions to improve the project and make it even better! If you would like to contribute, please follow these guidelines:
 
@@ -72,12 +72,12 @@ Please note that all contributions should align with our [code of use](#usage). 
 
 We appreciate your time and effort in contributing to this project!
 
-## License and Policies
+### License and Policies
 
 - [MIT Licence](./LICENSE)
 - [Policy](./Policy/magicoincompanion_Policy.md) 
 
-## Contact
+### Contact
 
 If you have any questions, suggestions, or need assistance with this project, feel free to reach out to me. You can contact me via:
 
@@ -86,3 +86,6 @@ If you have any questions, suggestions, or need assistance with this project, fe
 - GitHub: [rafgui12](https://github.com/rafgui12)
 
 I'm always happy to hear from you and help in any way I can. Don't hesitate to reach out!
+
+### **Available in**
+[![Google Play](https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=com.rafgui.magicoincompanion)
